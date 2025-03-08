@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Immersive Parallax Experience</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        html {
+            height: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            height: 100%;
+            overflow-x: hidden;
+            color: #fff;
+            background-color: #050505;
+            perspective: 1px;
+            transform-style: preserve-3d;
+            overflow-y: auto;
+        }
+
+        .parallax-wrapper {
+            width: 100%;
+            height: 100vh;
+            padding-top: 20vh;
+            box-sizing: border-box;
+            transform-style: preserve-3d;
+        }
+
+        .parallax-wrapper::before {
+            content: "";
+            width: 100%;
+            height: 100vh;
+            top: 0;
+            left: 0;
+            background-image: url('/api/placeholder/1920/1080');
+            position: absolute;
+            z-index: -1;
+            transform: translateZ(-1px) scale(2);
+        }
+
+        .regular-wrapper {
+            width: 100%;
+            height: auto;
+            padding: 50px 20px;
+            background: linear-gradient(to bottom, rgba(18, 18, 18, 0.9), rgba(5, 5, 5, 0.95));
+            z-index: 2;
+            position: relative;
+        }
+
+        .content {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 5rem;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            transform: translateZ(-0.5px) scale(1.5);
+            margin-top: -10vh;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #ccc;
+        }
+
+        .header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            padding: 0 20px;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(0deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.7) 100%);
+            z-index: -1;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #ff3366, #ff6b3d);
+            color: white;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            margin-top: 30px;
+        }
+
+        .btn:hover {
+            box-shadow: 0 8px 20px rgba(255, 51, 102, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ff3366;
+        }
+
+        .parallax-section {
+            height: 60vh;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .parallax-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            z-index: -1;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+
+        .section-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0) translateX(-50%);
+            }
+            40% {
+                transform: translateY(-20px) translateX(-50%);
+            }
+            60% {
+                transform: translateY(-10px) translateX(-50%);
+            }
+        }
+
+        .testimonial-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .testimonial-card {
+            background: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .testimonial-card p {
+            font-style: italic;
+            margin-bottom: 20px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            background-color: #333;
+        }
+
+        .author-info h4 {
+            margin: 0;
+            color: #fff;
+        }
+
+        .author-info span {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .feature-grid, .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer {
+            background: #111;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .footer p {
+            margin-bottom: 0;
+            color: #666;
+        }
+
+        /* Floating elements */
+        .floating {
+            animation-name: floating;
+            animation-duration: 3s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        @keyframes floating {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 15px); }
+            100% { transform: translate(0, 0px); }
+        }
+
+        .floating-2 {
+            animation-name: floating;
+            animation-duration: 5s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        .floating-3 {
+            animation-name: floating;
+            animation-duration: 7s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        /* Glossy effect */
+        .glossy {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glossy::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -75%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -75%; opacity: 0; }
+            20% { left: -75%; opacity: 1; }
+            100% { left: 125%; opacity: 0; }
+        }
+
+        /* Particle background */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .gradient-text {
+            background: linear-gradient(45deg, #ff3366, #ff6b3d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div id="particles-js"></div>
+        <h1 class="gradient-text floating">Immersive Parallax Journey</h1>
+        <p class="floating-2" style="font-size: 1.5rem; max-width: 800px; margin: 20px auto;">Experience the magic of depth and dimension in web design with smooth parallax scrolling effects.</p>
+        <a href="#explore" class="btn floating-3 glossy">Begin Journey</a>
+        
+        <div class="scroll-indicator">
+            <svg width="30" height="50" viewBox="0 0 30 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="26" height="46" rx="13" stroke="white" stroke-width="3"/>
+                <circle class="floating" cx="15" cy="15" r="5" fill="white"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="parallax-wrapper">
+        <h1 id="explore">Explore The Possibilities</h1>
+    </div>
+
+    <div class="regular-wrapper">
+        <div class="content">
+            <h2>Captivating Visual Stories</h2>
+            <p>Parallax scrolling transforms ordinary websites into extraordinary experiences by creating an illusion of depth. As users scroll, background elements move at different speeds than foreground elements, resulting in a dynamic and engaging visual journey.</p>
+            <p>This immersive technique guides visitors through content in a memorable way, perfect for storytelling, showcasing products, or creating standout portfolios.</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card glossy">
+                    <h3>Depth & Dimension</h3>
+                    <p>Create a sense of space and perspective that draws viewers in and keeps them engaged throughout the scrolling experience.</p>
+                </div>
+                <div class="feature-card glossy">
+                    <h3>Visual Hierarchy</h3>
+                    <p>Guide attention naturally through content by controlling which elements move faster or slower, emphasizing what matters most.</p>
+                </div>
+                <div class="feature-card glossy">
+                    <h3>Memorable Interactions</h3>
+                    <p>Leave lasting impressions with subtle motion effects that respond to user scrolling, creating a sense of control and discovery.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="parallax-section">
+        <div class="parallax-bg" style="background-image: url('/api/placeholder/1920/1080');"></div>
+        <div class="overlay"></div>
+        <div class="section-content">
+            <h2 class="gradient-text" style="font-size: 3.5rem;">Transform User Experience</h2>
+            <p style="font-size: 1.3rem;">Elevate ordinary websites into extraordinary journeys with the magic of parallax scrolling</p>
+        </div>
+    </div>
+
+    <div class="regular-wrapper">
+        <div class="content">
+            <h2>Perfect For Diverse Applications</h2>
+            <p>Parallax design excels across multiple contexts, bringing depth and engagement to various digital experiences:</p>
+            
+            <div class="feature-grid">
+                <div class="feature-card glossy">
+                    <h3>Brand Storytelling</h3>
+                    <p>Craft compelling narratives that unfold as users scroll, creating emotional connections and memorable brand experiences.</p>
+                </div>
+                <div class="feature-card glossy">
+                    <h3>Product Showcases</h3>
+                    <p>Present products with depth and dimension that traditional flat layouts can't match, driving engagement and conversions.</p>
+                </div>
+                <div class="feature-card glossy">
+                    <h3>Interactive Portfolios</h3>
+                    <p>Make your creative work stand out with dynamic scrolling effects that bring projects to life and showcase your innovation.</p>
+                </div>
+                <div class="feature-card glossy">
+                    <h3>Digital Marketing</h3>
+                    <p>Capture and maintain visitor attention with visually stunning landing pages that outperform static alternatives.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="parallax-section">
+        <div class="parallax-bg" style="background-image: url('/api/placeholder/1920/1080');"></div>
+        <div class="overlay"></div>
+        <div class="section-content">
+            <h2 class="gradient-text" style="font-size: 3.5rem;">Client Success Stories</h2>
+            <p style="font-size: 1.3rem;">See the impact of parallax design through the eyes of our satisfied clients</p>
+        </div>
+    </div>
+
+    <div class="regular-wrapper">
+        <div class="content">
+            <h2>What Our Clients Say</h2>
+            <p>Real experiences from businesses who transformed their digital presence with parallax design:</p>
+            
+            <div class="testimonial-grid">
+                <div class="testimonial-card">
+                    <p>"The parallax effect completely transformed our brand storytelling. Our engagement metrics increased by 70% and users spend twice as long exploring our content."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div class="author-info">
+                            <h4>Sarah Johnson</h4>
+                            <span>Marketing Director, TechVision</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"Our product showcase became so much more engaging. The depth and dimension created by parallax scrolling helped us increase conversions by 35%."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div class="author-info">
+                            <h4>Michael Chen</h4>
+                            <span>E-commerce Manager, StyleHouse</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="testimonial-card">
+                    <p>"As a creative studio, we needed our portfolio to stand out. The parallax effects have helped us win more clients who are impressed by our innovative approach."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar"></div>
+                        <div class="author-info">
+                            <h4>Emma Rodriguez</h4>
+                            <span>Creative Director, Pixel Perfect</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 Parallax Experience. All rights reserved.</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize particles.js
+            particlesJS("particles-js", {
+                "particles": {
+                    "number": {
+                        "value": 80,
+                        "density": {
+                            "enable": true,
+                            "value_area": 800
+                        }
+                    },
+                    "color": {
+                        "value": "#ffffff"
+                    },
+                    "shape": {
+                        "type": "circle",
+                        "stroke": {
+                            "width": 0,
+                            "color": "#000000"
+                        }
+                    },
+                    "opacity": {
+                        "value": 0.5,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 1,
+                            "opacity_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true,
+                        "anim": {
+                            "enable": true,
+                            "speed": 2,
+                            "size_min": 0.1,
+                            "sync": false
+                        }
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#ffffff",
+                        "opacity": 0.4,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out",
+                        "bounce": false,
+                        "attract": {
+                            "enable": false,
+                            "rotateX": 600,
+                            "rotateY": 1200
+                        }
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": true,
+                            "mode": "repulse"
+                        },
+                        "onclick": {
+                            "enable": true,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "repulse": {
+                            "distance": 100,
+                            "duration": 0.4
+                        },
+                        "push": {
+                            "particles_nb": 4
+                        }
+                    }
+                },
+                "retina_detect": true
+            });
+            
+            // Enhanced parallax effect
+            const parallaxBgs = document.querySelectorAll('.parallax-bg');
+            
+            // Set first parallax bg to mountain scene
+            if (parallaxBgs.length > 0) {
+                parallaxBgs[0].style.backgroundImage = "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/api/placeholder/1920/1080')";
+            }
+            
+            // Set second parallax bg to city scene
+            if (parallaxBgs.length > 1) {
+                parallaxBgs[1].style.backgroundImage = "linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('/api/placeholder/1920/1080')";
+            }
+            
+            // Replace main parallax wrapper background
+            const parallaxWrapper = document.querySelector('.parallax-wrapper');
+            if (parallaxWrapper) {
+                const beforeStyle = document.createElement('style');
+                beforeStyle.textContent = `
+                    .parallax-wrapper::before {
+                        background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('/api/placeholder/1920/1080') !important;
+                        background-size: cover;
+                        background-position: center;
+                    }
+                `;
+                document.head.appendChild(beforeStyle);
+            }
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            });
+            
+            // Parallax effect on scroll
+            window.addEventListener('scroll', function() {
+                const scrollTop = window.pageYOffset;
+                
+                // Update parallax elements
+                document.querySelectorAll('.parallax-section').forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.offsetHeight;
+                    
+                    if (scrollTop + window.innerHeight > sectionTop && scrollTop < sectionTop + sectionHeight) {
+                        const parallaxBg = section.querySelector('.parallax-bg');
+                        if (parallaxBg) {
+                            const speed = 0.5;
+                            parallaxBg.style.transform = `translateY(${(scrollTop - sectionTop) * speed}px)`;
+                        }
+                    }
+                });
+                
+                // Animate elements on scroll
+                document.querySelectorAll('.feature-card, .testimonial-card').forEach(card => {
+                    const cardTop = card.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+                    
+                    if (cardTop < windowHeight * 0.8) {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
